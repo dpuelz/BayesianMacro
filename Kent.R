@@ -13,7 +13,8 @@ L <- function(x, k)
   c(rep(NA, k), x)[1 : length(x)] 
 }
 
-deseasonalizeQ <- function (x){
+deseasonalizeQ <- function (x)
+{
   x <- ts(x)
   #Step1: Centered moving averages: create cma time series having the same length with the original time series x
   # cma has 2 NAs on both ends.
@@ -53,7 +54,24 @@ deseasonalizeQ <- function (x){
   
   #Step6: Deseasonalized values
   out <- x/propadjsi  # deseasonalized = x/propadjsi
-  out
+  return(out)
+}
+
+deasonalizeDavidQ = function(x)
+{
+  Time = 1:length(x)
+  N = rep(1:4,length(x)/4)
+  
+  Q1 = (N==1)
+  Q2 = (N==2)
+  Q3 = (N==3)
+  
+  fit = lm(x~Time+Q1+Q2+Q3)
+  
+  alpha = fit$coefficients[1]
+  beta = fit$coefficients[2]
+  deseason = alpha + beta*Time + fit$residuals
+  return(deseason)
 }
 
 # Data --------------------------------------------------------------------
@@ -67,12 +85,22 @@ udate = unique(mac$date)
 
 newmac = mac[order(mac$country_j),]
 
- = (newmac$exp / newmac$exp_wld)*100
+newmac$exprat = (newmac$exp / newmac$exp_wld)*100
+test = newmac$exprat[intersect(which(newmac$country_j=='Australia'),which(newmac$country_i=='United Kingdom'))]
+plot(test,type='l')
+testdea = deseasonalizeQ(test)
+lines(testdea,col='blue')
 
 for(i in 1:N)
 {
   
 }
+
+
+x <- 1:100
+filter(x, rep(1, 3))
+filter(x, rep(1, 3), sides = 1)
+filter(x, rep(1, 3), sides = 1, circular = TRUE)
 
 
 # Building design matrix --------------------------------------------------
