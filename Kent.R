@@ -57,7 +57,7 @@ deseasonalizeQ <- function (x)
   return(out)
 }
 
-deasonalizeDavidQ = function(x)
+deseasonalizeDavidQ = function(x)
 {
   Time = 1:length(x)
   N = rep(1:4,length(x)/4)
@@ -83,24 +83,45 @@ ucountj = unique(mac$country_j)
 ucounti = unique(mac$country_i)
 udate = unique(mac$date)
 
+# order by country j
 newmac = mac[order(mac$country_j),]
 
-newmac$exprat = (newmac$exp / newmac$exp_wld)*100
-test = newmac$exprat[intersect(which(newmac$country_j=='Australia'),which(newmac$country_i=='United Kingdom'))]
-plot(test,type='l')
-testdea = deseasonalizeQ(test)
-lines(testdea,col='blue')
+# adding some variables
+newmac$exp_share = (newmac$exp / newmac$exp_wld)*100
+newmac$fx = newmac$fx_i / newmac$fx_j
+newmac$comp = newmac$reer_i / newmac$reer_j
 
-for(i in 1:N)
+# making change in export share, fx, comp, gdp variables variable (quarterly)
+newmac$dexp_share = rep(0,N)
+newmac$dfx = rep(0,N)
+newmac$dcomp = rep(0,N)
+newmac$dgdp = rep(0,N)
+
+for(i in 1:length(ucounti))
 {
-  
+  for(j in 1:length(ucountj))
+  {
+    ind = intersect(which(newmac$country_j==ucountj[j]),which(newmac$country_i==ucounti[i]))
+    
+    # export share change for all i and j
+    exp_share = newmac$exp_share[ind]
+    newmac$dexp_share[ind] = exp_share - L(exp_share,1)
+    
+    # fx change for all i and j
+    fx = newmac$fx[ind]
+    newmac$dfx[ind] = (1 - (fx/L(fx,1)))*100
+    
+    # comp change for all i and j
+    comp = newmac$comp[ind]
+    newmac$dcomp[ind] = comp - L(comp,1)
+    
+    # gdp change for all i and j
+    gdp = newmac$comp[ind]
+    newmac$dgdp[ind] = (gdp/L(gdp,1) - 1)*100
+  }
 }
 
 
-x <- 1:100
-filter(x, rep(1, 3))
-filter(x, rep(1, 3), sides = 1)
-filter(x, rep(1, 3), sides = 1, circular = TRUE)
 
 
 # Building design matrix --------------------------------------------------
