@@ -2,6 +2,7 @@
 library(foreign)
 library(zoo)
 library(plm)
+library(Matrix)
 
 setwd("~/Documents/Kent/Macro")
 mac = read.dta('quarterly.dta')
@@ -121,8 +122,22 @@ for(i in 1:length(ucounti))
   }
 }
 
-
-
-
 # Building design matrix --------------------------------------------------
 
+# construct X
+numcovar = 4
+size = numcovar*length(ucountj)
+loopind = seq(from = 1,to = size,by = numcovar)
+BIGX = Matrix(matrix(0,N,size),sparse=T) #using sparse matrix class
+storenum=1
+
+for(i in loopind)
+{
+  TF = ustore[storenum]==store
+  ind = which(TF==TRUE)
+  BIGX[ind,i] = const[ind]
+  BIGX[ind,i+1] = log(price[ind])
+  BIGX[ind,i+2] = disp[ind]
+  BIGX[ind,i+3] = dispIlogprice[ind]
+  storenum = storenum+1
+}
