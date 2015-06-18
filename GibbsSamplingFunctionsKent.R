@@ -164,6 +164,15 @@ samplemuaug = function(zmxB,tau2)
   return(draw)
 }
 
+samplealpha = function(ymxB,sig2,tau2)
+{
+  N = length(ymxB)
+  ymxBbar = mean(ymxB)
+  sigalpha2 = 1(N/sig2 + 1/tau2)
+  malpha = sigalpha2*(N*ymxBbar)
+  draw = rnorm(1,malpha,sqrt(sigalpha2))
+}
+
 Gibbswrapperaug = function(loops,y,X,stateID)
 {
   # prior on beta vector
@@ -213,42 +222,56 @@ Gibbswrapperaug = function(loops,y,X,stateID)
   return(list(BMCMC,zMCMC,tau2MCMC,muMCMC))
 }
 
-Gibbswrapper = function(loops,y,X,NS)
+Gibbswrapper = function(loops,y,X,numi,numj)
 {
   # prior on mui
   m = 0
   sig02 = 50
   
-  #other stuff
+  # other stuff
   size = dim(X)[2]
-  numpred = size / NS
+  numpred = size / (numi*numj)
   BMCMC = matrix(0,size,loops)
   sig2MCMC = rep(0,loops)
   names(sig2MCMC) = rep('sig2',length(sig2MCMC))
   tau2MCMC = matrix(0,numpred,loops)
   muMCMC = matrix(0,numpred,loops)
+  alphaMCMC = matrix(0,numi,loops)
   rownames(tau2MCMC) = paste('tau2',1:numpred)
   rownames(muMCMC) = paste('mu',1:numpred)
   
+  # starting points for MCMC
   BMCMC[,1] = rep(1,size)
   sig2MCMC[1] = 1
   tau2MCMC[,1] = rep(1,numpred)
-  muMCMC[,1] = rep(1,numpred) 
+  muMCMC[,1] = rep(1,numpred)
+  alphaMCMC = rep(1,numi)
   loopind = seq(from = 1,to = size,by = numpred)
   
+  #*************
+  ## THE MCMC ##
+  #*************
   for(i in 2:loops)
   {
     if(i%%50==0){print(noquote(paste('MCMC iter =',i)))}
     
+    # sample betas
     BMCMC[,i] = as.numeric(sampleBmean(y,X,sig2MCMC[i-1],rep(tau2MCMC[,i-1],NS),rep(muMCMC[,i-1],NS)))
+    
+    # sample sig2
     sig2MCMC[i] = samplesig2mean(y,X,BMCMC[,i])
     
+    # sample the prior parameters on the betas .. nu and tau2 (both vectors)
     for(j in 1:numpred)
     {
       predin = (loopind+j-1)
       tau2MCMC[j,i] = sampletau2mean(y,(BMCMC[predin,i]-muMCMC[j,i-1]))
       muMCMC[j,i] = samplemumean(y,BMCMC[predin,i],sig2MCMC[i],tau2MCMC[j,i],m,sig02)    
     }
+    
+    # sample the country level fixed effects (alphas)
+    
+    
   }
   return(list(BMCMC,sig2MCMC,tau2MCMC,muMCMC))
 }

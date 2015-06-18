@@ -131,10 +131,10 @@ newmac2 = newmac[-nas,]
 M = dim(newmac2)[1]
 
 # construct X
-numcovar = 4
+numcovar = 3
 size = numcovar*length(ucountj)*length(ucounti)
 loopind = seq(from = 1,to = size,by = numcovar)
-BIGX = Matrix(matrix(0,M,size),sparse=T) #using sparse matrix class
+X = Matrix(matrix(0,M,size),sparse=T) #using sparse matrix class
 
 # indicies for each i and j pair
 indlist = list()
@@ -149,17 +149,22 @@ for(i in 1:length(ucounti))
 }
 
 # constructing the covariates
-const = rep(1,M)
 countrypairnum = 1
 for(i in loopind)
 {
   ind = indlist[[countrypairnum]]
-  BIGX[ind,i] = const[ind]
-  BIGX[ind,i+1] = newmac2$dfx[ind]
-  BIGX[ind,i+2] = newmac2$dcomp[ind]
-  BIGX[ind,i+3] = newmac2$dgdp[ind]
+  X[ind,i] = newmac2$dfx[ind]
+  X[ind,i+1] = newmac2$dcomp[ind]
+  X[ind,i+2] = newmac2$dgdp[ind]
   countrypairnum=countrypairnum+1
 }
 
 # saving the response as y
 y = newmac2$dexp_share
+
+# Estimating Model via Gibbs Sampler --------------------------------------
+
+numi = length(ucounti)
+numj = length(ucountj)
+loops = 2000
+
