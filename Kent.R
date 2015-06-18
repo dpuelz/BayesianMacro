@@ -124,12 +124,16 @@ for(i in 1:length(ucounti))
 
 # Building design matrix --------------------------------------------------
 
+# removing missing data
+nas = unique(c(which(is.na(newmac$dexp_share)),which(is.na(newmac$dfx)),which(is.na(newmac$dgdp)),which(is.na(newmac$dcomp))))
+newmac2 = newmac[-nas,]
+M = dim(newmac2)[1]
+
 # construct X
 numcovar = 4
-size = numcovar*length(ucountj)
+size = numcovar*length(ucountj)*length(ucounti)
 loopind = seq(from = 1,to = size,by = numcovar)
-BIGX = Matrix(matrix(0,N,size),sparse=T) #using sparse matrix class
-storenum=1
+BIGX = Matrix(matrix(0,M,size),sparse=T) #using sparse matrix class
 
 # indicies for each i and j pair
 indlist = list()
@@ -138,21 +142,23 @@ for(i in 1:length(ucounti))
 {
   for(j in 1:length(ucountj))
   {
-    indlist[[k]] = intersect(which(newmac$country_j==ucountj[j]),which(newmac$country_i==ucounti[i]))
+    indlist[[k]] = intersect(which(newmac2$country_j==ucountj[j]),which(newmac2$country_i==ucounti[i]))
     k=k+1
   }
 }
 
 # constructing the covariates
-
-
+const = rep(1,M)
+countrypairnum = 1
 for(i in loopind)
 {
-  TF = ustore[storenum]==store
-  ind = which(TF==TRUE)
+  ind = indlist[[countrypairnum]]
   BIGX[ind,i] = const[ind]
-  BIGX[ind,i+1] = log(price[ind])
-  BIGX[ind,i+2] = disp[ind]
-  BIGX[ind,i+3] = dispIlogprice[ind]
-  storenum = storenum+1
+  BIGX[ind,i+1] = newmac$dfx[ind]
+  BIGX[ind,i+2] = newmac$dcomp[ind]
+  BIGX[ind,i+3] = newmac$dgdp[ind]
+  countrypairnum=countrypairnum+1
 }
+
+# saving the response as y
+y = newmac2$dexp_share
