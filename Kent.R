@@ -4,7 +4,7 @@ library(zoo)
 library(plm)
 library(Matrix)
 
-setwd("~/Documents/Kent/Macro")
+setwd("~/Documents/Kent/BayesianMacro")
 mac = read.dta('quarterly.dta')
 
 # Functions ---------------------------------------------------------------
@@ -130,6 +130,21 @@ size = numcovar*length(ucountj)
 loopind = seq(from = 1,to = size,by = numcovar)
 BIGX = Matrix(matrix(0,N,size),sparse=T) #using sparse matrix class
 storenum=1
+
+# indicies for each i and j pair
+indlist = list()
+k=1
+for(i in 1:length(ucounti))
+{
+  for(j in 1:length(ucountj))
+  {
+    indlist[[k]] = intersect(which(newmac$country_j==ucountj[j]),which(newmac$country_i==ucounti[i]))
+    k=k+1
+  }
+}
+
+# constructing the covariates
+
 
 for(i in loopind)
 {
