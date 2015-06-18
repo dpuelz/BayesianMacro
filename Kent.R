@@ -4,7 +4,8 @@ library(zoo)
 library(plm)
 library(Matrix)
 
-setwd("~/Documents/Kent/BayesianMacro")
+setwd("~/Documents/BayesianMacro")
+source('GibbsSamplingFunctionsKent.R')
 mac = read.dta('quarterly.dta')
 
 # Functions ---------------------------------------------------------------
