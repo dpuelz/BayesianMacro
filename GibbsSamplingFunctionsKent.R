@@ -164,13 +164,22 @@ samplemuaug = function(zmxB,tau2)
   return(draw)
 }
 
-samplealpha = function(ymxB,sig2,tau2)
+samplealpha = function(ymxB,sig2)
 {
   N = length(ymxB)
   ymxBbar = mean(ymxB)
-  sigalpha2 = 1(N/sig2 + 1/tau2)
+  sigalpha2 = 1(N + 1/sig2)
   malpha = sigalpha2*(N*ymxBbar)
   draw = rnorm(1,malpha,sqrt(sigalpha2))
+}
+
+samplesigalpha2 = function(mu)
+{
+  N = length(mu)
+  p1 = (N+3)/2
+  p2 = ( (t(mu))%*%mu )/2
+  draw = rgamma(1,p1,p2)
+  return(1/draw)
 }
 
 Gibbswrapperaug = function(loops,y,X,stateID)
@@ -222,7 +231,7 @@ Gibbswrapperaug = function(loops,y,X,stateID)
   return(list(BMCMC,zMCMC,tau2MCMC,muMCMC))
 }
 
-Gibbswrapper = function(loops,y,X,numi,numj)
+Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
 {
   # prior on mui
   m = 0
@@ -255,22 +264,38 @@ Gibbswrapper = function(loops,y,X,numi,numj)
   {
     if(i%%50==0){print(noquote(paste('MCMC iter =',i)))}
     
-    # sample betas
-    BMCMC[,i] = as.numeric(sampleBmean(y,X,sig2MCMC[i-1],rep(tau2MCMC[,i-1],NS),rep(muMCMC[,i-1],NS)))
+    # constructing fixed effect vector
+    alphas = rep(0,length(y))
+    for(j in 1:numi)
+    {
+      ind = alphaIDlist[[j]]
+      alphas[ind] = alphaMCMC[j,i-1]
+    }
     
-    # sample sig2
-    sig2MCMC[i] = samplesig2mean(y,X,BMCMC[,i])
+    # SAMPLE betas
+    BMCMC[,i] = as.numeric(sampleBmean(y-alphas,X,sig2MCMC[i-1],rep(tau2MCMC[,i-1],numi*numj),rep(muMCMC[,i-1],numi*numj)))
     
-    # sample the prior parameters on the betas .. nu and tau2 (both vectors)
+    # SAMPLE sig2
+    sig2MCMC[i] = samplesig2mean(y-alphas,X,BMCMC[,i])
+    
+    # SAMPLE the prior parameters on the betas .. mu and tau2 (both vectors)
     for(j in 1:numpred)
     {
       predin = (loopind+j-1)
-      tau2MCMC[j,i] = sampletau2mean(y,(BMCMC[predin,i]-muMCMC[j,i-1]))
-      muMCMC[j,i] = samplemumean(y,BMCMC[predin,i],sig2MCMC[i],tau2MCMC[j,i],m,sig02)    
+      tau2MCMC[j,i] = sampletau2mean(y-alphas,(BMCMC[predin,i]-muMCMC[j,i-1]))
+      muMCMC[j,i] = samplemumean(y-alphas,BMCMC[predin,i],sig2MCMC[i],tau2MCMC[j,i],m,sig02)    
     }
     
-    # sample the country level fixed effects (alphas)
+    # sample prior parameter sigalpha2
+    sigalpha2MCMC[i] = samplesigalpha2(muMCMC[,i])
     
+    # SAMPLE the country i level fixed effects (alphas)
+    for(j in 1:numi)
+    {
+      ind = alphaIDlist[[j]]
+      yxmB = y[ind] - X[ind,]%*%BMCMC[,i]
+      alphaMCMC[j,i] = samplealpha(yxmB,sigalpha2MCMC[i])
+    }
     
   }
   return(list(BMCMC,sig2MCMC,tau2MCMC,muMCMC))

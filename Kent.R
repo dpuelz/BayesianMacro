@@ -168,3 +168,9 @@ numi = length(ucounti)
 numj = length(ucountj)
 loops = 2000
 
+alphaIDlist = list()
+for(i in 1:length(ucounti))
+{
+  alphaIDlist[[i]] = which(newmac2$country_i==ucounti[i])
+}
+ 
