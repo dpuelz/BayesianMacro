@@ -154,9 +154,9 @@ for(i in loopind)
 {
   ind = indlist[[countrypairnum]]
   BIGX[ind,i] = const[ind]
-  BIGX[ind,i+1] = newmac$dfx[ind]
-  BIGX[ind,i+2] = newmac$dcomp[ind]
-  BIGX[ind,i+3] = newmac$dgdp[ind]
+  BIGX[ind,i+1] = newmac2$dfx[ind]
+  BIGX[ind,i+2] = newmac2$dcomp[ind]
+  BIGX[ind,i+3] = newmac2$dgdp[ind]
   countrypairnum=countrypairnum+1
 }
 
