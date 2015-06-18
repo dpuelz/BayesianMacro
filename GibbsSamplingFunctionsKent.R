@@ -173,7 +173,7 @@ samplealpha = function(ymxB,sig2)
   draw = rnorm(1,malpha,sqrt(sigalpha2))
 }
 
-samplesigalpha2 = function(mu)
+samplesigmalpha2 = function(mu)
 {
   N = length(mu)
   p1 = (N+3)/2
@@ -181,6 +181,9 @@ samplesigalpha2 = function(mu)
   draw = rgamma(1,p1,p2)
   return(1/draw)
 }
+
+
+# The wrapper functions ---------------------------------------------------
 
 Gibbswrapperaug = function(loops,y,X,stateID)
 {
@@ -240,12 +243,15 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
   # other stuff
   size = dim(X)[2]
   numpred = size / (numi*numj)
+  
   BMCMC = matrix(0,size,loops)
   sig2MCMC = rep(0,loops)
   names(sig2MCMC) = rep('sig2',length(sig2MCMC))
   tau2MCMC = matrix(0,numpred,loops)
   muMCMC = matrix(0,numpred,loops)
   alphaMCMC = matrix(0,numi,loops)
+  sigalpha2MCMC = rep(0,loops)
+  
   rownames(tau2MCMC) = paste('tau2',1:numpred)
   rownames(muMCMC) = paste('mu',1:numpred)
   
@@ -287,14 +293,14 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
     }
     
     # sample prior parameter sigalpha2
-    sigalpha2MCMC[i] = samplesigalpha2(muMCMC[,i])
+    sigmalpha2MCMC[i] = samplesigalpha2(alphaMCMC[,i-1])
     
     # SAMPLE the country i level fixed effects (alphas)
     for(j in 1:numi)
     {
       ind = alphaIDlist[[j]]
       yxmB = y[ind] - X[ind,]%*%BMCMC[,i]
-      alphaMCMC[j,i] = samplealpha(yxmB,sigalpha2MCMC[i])
+      alphaMCMC[j,i] = samplealpha(yxmB,sigmalpha2MCMC[i])
     }
     
   }
