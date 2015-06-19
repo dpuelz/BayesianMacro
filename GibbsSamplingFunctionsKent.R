@@ -182,7 +182,6 @@ samplesigmalpha2 = function(mu)
   return(1/draw)
 }
 
-
 # The wrapper functions ---------------------------------------------------
 
 Gibbswrapperaug = function(loops,y,X,stateID)
@@ -250,7 +249,7 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
   tau2MCMC = matrix(0,numpred,loops)
   muMCMC = matrix(0,numpred,loops)
   alphaMCMC = matrix(0,numi,loops)
-  sigalpha2MCMC = rep(0,loops)
+  sigmalpha2MCMC = rep(0,loops)
   
   rownames(tau2MCMC) = paste('tau2',1:numpred)
   rownames(muMCMC) = paste('mu',1:numpred)
@@ -260,7 +259,7 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
   sig2MCMC[1] = 1
   tau2MCMC[,1] = rep(1,numpred)
   muMCMC[,1] = rep(1,numpred)
-  alphaMCMC = rep(1,numi)
+  alphaMCMC[,1] = rep(1,numi)
   loopind = seq(from = 1,to = size,by = numpred)
   
   #*************
@@ -293,7 +292,7 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
     }
     
     # sample prior parameter sigalpha2
-    sigmalpha2MCMC[i] = samplesigalpha2(alphaMCMC[,i-1])
+    sigmalpha2MCMC[i] = samplesigmalpha2(alphaMCMC[,i-1])
     
     # SAMPLE the country i level fixed effects (alphas)
     for(j in 1:numi)
