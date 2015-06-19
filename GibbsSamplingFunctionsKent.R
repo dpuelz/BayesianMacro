@@ -164,13 +164,13 @@ samplemuaug = function(zmxB,tau2)
   return(draw)
 }
 
-samplealpha = function(ymxB,sig2)
+samplealpha = function(ymxB,sigalpha2,sig2)
 {  
   N = length(ymxB)
   ymxBbar = mean(ymxB)
-  sigalpha2 = 1/(N + 1/sig2)
-  malpha = sigalpha2*(N*ymxBbar)
-  draw = rnorm(1,malpha,sqrt(sigalpha2))
+  sa2 = 1/(N/sig2 + 1/sigalpha2)
+  malpha = sa2*((N/sig2)*ymxBbar)
+  draw = rnorm(1,malpha,sqrt(sa2))
 }
 
 samplesigmalpha2 = function(mu)
@@ -300,8 +300,8 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
     {
       ind = alphaIDlist[[j]]
       ymxB = y[ind] - X[ind,]%*%BMCMC[,i]
-      alphaMCMC[j,i] = samplealpha(ymxB,sigmalpha2MCMC[i])
+      alphaMCMC[j,i] = samplealpha(ymxB,sigmalpha2MCMC[i],sig2MCMC[i])
     }
   }
-  return(list(BMCMC,sig2MCMC,tau2MCMC,muMCMC))
+  return(list(BMCMC,sig2MCMC,tau2MCMC,muMCMC,alphaMCMC,sigmalpha2MCMC))
 }

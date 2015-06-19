@@ -166,7 +166,7 @@ y = newmac2$dexp_share
 
 numi = length(ucounti)
 numj = length(ucountj)
-loops = 2000
+loops = 300
 
 alphaIDlist = list()
 for(i in 1:length(ucounti))
@@ -175,4 +175,17 @@ for(i in 1:length(ucounti))
 }
 
 results = Gibbswrapper(loops,y,X,numi,numj,alphaIDlist)
- 
+BMCMC = results[[1]]
+sig2MCMC = results[[2]]
+tau2MCMC = results[[3]]
+muMCMC = results[[4]]
+
+plot(sig2MCMC[10:loops],type='l')
+
+plot(tau2MCMC[1,100:loops],type='l')
+plot(tau2MCMC[2,100:loops],type='l')
+plot(tau2MCMC[3,100:loops],type='l')
+
+plot(muMCMC[1,100:loops],type='l')
+plot(muMCMC[2,100:loops],type='l')
+plot(muMCMC[3,100:loops],type='l')
