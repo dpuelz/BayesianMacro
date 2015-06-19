@@ -179,6 +179,7 @@ BMCMC = results[[1]]
 sig2MCMC = results[[2]]
 tau2MCMC = results[[3]]
 muMCMC = results[[4]]
+alphaMCMC = results[[5]]
 
 plot(sig2MCMC[10:loops],type='l')
 

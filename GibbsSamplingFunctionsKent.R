@@ -86,7 +86,7 @@ samplesig2mean = function(y,X,B)
   return(1/draw)
 }
 
-sampletau2mean = function(y,B)
+sampletau2mean = function(B)
 {
   NS = length(B)
   p1 = (NS+3)/2
@@ -95,7 +95,7 @@ sampletau2mean = function(y,B)
   return(1/draw)
 }
 
-samplemumean = function(y,B,sig2,tau2,m,v2)
+samplemumean = function(B,sig2,tau2,m,v2)
 {
   NS = length(B)
   thetabar = mean(B)
@@ -288,8 +288,8 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
     for(j in 1:numpred)
     {
       predin = (loopind+j-1)
-      tau2MCMC[j,i] = sampletau2mean(y-alphas,(BMCMC[predin,i]-muMCMC[j,i-1]))
-      muMCMC[j,i] = samplemumean(y-alphas,BMCMC[predin,i],sig2MCMC[i],tau2MCMC[j,i],m,sig02)    
+      tau2MCMC[j,i] = sampletau2mean((BMCMC[predin,i]-muMCMC[j,i-1]))
+      muMCMC[j,i] = samplemumean(BMCMC[predin,i],sig2MCMC[i],tau2MCMC[j,i],m,sig02)    
     }
     
     # sample prior parameter sigalpha2
