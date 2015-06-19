@@ -165,10 +165,10 @@ samplemuaug = function(zmxB,tau2)
 }
 
 samplealpha = function(ymxB,sig2)
-{
+{  
   N = length(ymxB)
   ymxBbar = mean(ymxB)
-  sigalpha2 = 1(N + 1/sig2)
+  sigalpha2 = 1/(N + 1/sig2)
   malpha = sigalpha2*(N*ymxBbar)
   draw = rnorm(1,malpha,sqrt(sigalpha2))
 }
@@ -257,6 +257,7 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
   # starting points for MCMC
   BMCMC[,1] = rep(1,size)
   sig2MCMC[1] = 1
+  sigmalpha2MCMC[1] = 1
   tau2MCMC[,1] = rep(1,numpred)
   muMCMC[,1] = rep(1,numpred)
   alphaMCMC[,1] = rep(1,numi)
@@ -267,7 +268,7 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
   #*************
   for(i in 2:loops)
   {
-    if(i%%50==0){print(noquote(paste('MCMC iter =',i)))}
+    if(i%%10==0){print(noquote(paste('MCMC iter =',i)))}
     
     # constructing fixed effect vector
     alphas = rep(0,length(y))
@@ -298,10 +299,9 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
     for(j in 1:numi)
     {
       ind = alphaIDlist[[j]]
-      yxmB = y[ind] - X[ind,]%*%BMCMC[,i]
-      alphaMCMC[j,i] = samplealpha(yxmB,sigmalpha2MCMC[i])
+      ymxB = y[ind] - X[ind,]%*%BMCMC[,i]
+      alphaMCMC[j,i] = samplealpha(ymxB,sigmalpha2MCMC[i])
     }
-    
   }
   return(list(BMCMC,sig2MCMC,tau2MCMC,muMCMC))
 }

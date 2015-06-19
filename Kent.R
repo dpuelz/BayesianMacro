@@ -173,4 +173,6 @@ for(i in 1:length(ucounti))
 {
   alphaIDlist[[i]] = which(newmac2$country_i==ucounti[i])
 }
+
+results = Gibbswrapper(loops,y,X,numi,numj,alphaIDlist)
  
