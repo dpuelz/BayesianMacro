@@ -107,26 +107,26 @@ for(i in 1:length(ucounti))
     
     # export share change for all i and j
     exp_share = newmac$exp_share[ind]
-    newmac$dexp_share[ind] = (exp_share) - (L(exp_share,1))
+    newmac$dexp_share[ind] = log(exp_share) - log(L(exp_share,1))
     
     # fx change for all i and j
     fx = newmac$fx[ind]
-    newmac$dfx[ind] = (1 - ((fx)/(L(fx,1))))*100
+    newmac$dfx[ind] = log( (1 - ((fx)/(L(fx,1)))) + 1 )
     
     # comp change for all i and j
     comp = newmac$comp[ind]
-    newmac$dcomp[ind] = (comp) - (L(comp,1))
+    newmac$dcomp[ind] = log(comp) - log(L(comp,1))
     
     # gdp change for all i and j
     gdp = newmac$comp[ind]
-    newmac$dgdp[ind] = ((gdp)/(L(gdp,1)) - 1)*100
+    newmac$dgdp[ind] = log( ((gdp)/(L(gdp,1)) - 1) + 1 )
   }
 }
 
 # Building design matrix --------------------------------------------------
 
 # removing missing data
-nas = unique(c(which(is.na(newmac$dexp_share)),which(is.na(newmac$dfx)),which(is.na(newmac$dgdp)),which(is.na(newmac$dcomp))))
+nas = unique(c(which(is.na(newmac$dexp_share)),which(is.na(newmac$dfx)),which(is.na(newmac$dgdp)),which(is.na(newmac$dcomp)),which(is.nan(newmac$dfx)),which(is.infinite(newmac$dexp_share))))
 newmac2 = newmac[-nas,]
 M = dim(newmac2)[1]
 
@@ -166,7 +166,7 @@ y = newmac2$dexp_share
 
 numi = length(ucounti)
 numj = length(ucountj)
-loops = 100
+loops = 1000
 
 alphaIDlist = list()
 for(i in 1:length(ucounti))
@@ -183,15 +183,15 @@ muMCMC = results[[4]]
 alphaMCMC = results[[5]]
 sigmalpha2MCMC = results[[6]]
 
-plot(sig2MCMC[10:loops],type='l',col=2)
-plot(sigmalpha2MCMC[loops/2:loops],type='l',col=5)
+plot(sig2MCMC[10:(loops/1.25):loops],type='l',col=2)
+plot(sigmalpha2MCMC[(loops/1.25):loops],type='l',col=5)
 
-plot(tau2MCMC[1,loops/2:loops],type='l')
-plot(tau2MCMC[2,loops/2:loops],type='l')
-plot(tau2MCMC[3,loops/2:loops],type='l')
+plot(tau2MCMC[1,(loops/1.25):loops],type='l')
+plot(tau2MCMC[2,(loops/1.25):loops],type='l')
+plot(tau2MCMC[3,(loops/1.25):loops],type='l')
 
-plot(muMCMC[1,loops/2:loops],type='l')
-plot(muMCMC[2,loops/2:loops],type='l')
-plot(muMCMC[3,loops/2:loops],type='l')
+plot(muMCMC[1,(loops/1.25):loops],type='l')
+plot(muMCMC[2,(loops/1.25):loops],type='l')
+plot(muMCMC[3,(loops/1.25):loops],type='l')
 
 

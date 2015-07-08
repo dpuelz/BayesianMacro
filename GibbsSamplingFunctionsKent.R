@@ -67,11 +67,11 @@ reportMCMC = function(obj)
 
 sampleBmean = function(y,X,sig2,tau2,mu)
 {
-  #   print(tau2)
   Tmat = diag(tau2)
   Tmatinv = diag(1/tau2)
   SIG1inv = (1/sig2)*((t(X))%*%X) + Tmatinv
-  SIG1 = ginv(as.matrix(SIG1inv))
+  # SIG1 = ginv(as.matrix(SIG1inv))
+  SIG1 = solve(SIG1inv)
   m = (1/sig2)*SIG1%*%t(X)%*%y + SIG1%*%Tmatinv%*%mu
   draw = mvrnorm(1,m,SIG1)
   return(draw)
