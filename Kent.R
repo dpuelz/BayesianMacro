@@ -107,19 +107,19 @@ for(i in 1:length(ucounti))
     
     # export share change for all i and j
     exp_share = newmac$exp_share[ind]
-    newmac$dexp_share[ind] = exp_share - L(exp_share,1)
+    newmac$dexp_share[ind] = (exp_share) - (L(exp_share,1))
     
     # fx change for all i and j
     fx = newmac$fx[ind]
-    newmac$dfx[ind] = (1 - (fx/L(fx,1)))*100
+    newmac$dfx[ind] = (1 - ((fx)/(L(fx,1))))*100
     
     # comp change for all i and j
     comp = newmac$comp[ind]
-    newmac$dcomp[ind] = comp - L(comp,1)
+    newmac$dcomp[ind] = (comp) - (L(comp,1))
     
     # gdp change for all i and j
     gdp = newmac$comp[ind]
-    newmac$dgdp[ind] = (gdp/L(gdp,1) - 1)*100
+    newmac$dgdp[ind] = ((gdp)/(L(gdp,1)) - 1)*100
   }
 }
 
@@ -166,7 +166,7 @@ y = newmac2$dexp_share
 
 numi = length(ucounti)
 numj = length(ucountj)
-loops = 500
+loops = 100
 
 alphaIDlist = list()
 for(i in 1:length(ucounti))
@@ -174,6 +174,7 @@ for(i in 1:length(ucounti))
   alphaIDlist[[i]] = which(newmac2$country_i==ucounti[i])
 }
 
+source('GibbsSamplingFunctionsKent.R')
 results = Gibbswrapper(loops,y,X,numi,numj,alphaIDlist)
 BMCMC = results[[1]]
 sig2MCMC = results[[2]]
@@ -182,15 +183,15 @@ muMCMC = results[[4]]
 alphaMCMC = results[[5]]
 sigmalpha2MCMC = results[[6]]
 
-plot(sig2MCMC[10:loops],type='l')
-plot(sigmalpha2MCMC[100:loops],type='l')
+plot(sig2MCMC[10:loops],type='l',col=2)
+plot(sigmalpha2MCMC[loops/2:loops],type='l',col=5)
 
-plot(tau2MCMC[1,100:loops],type='l')
-plot(tau2MCMC[2,100:loops],type='l')
-plot(tau2MCMC[3,100:loops],type='l')
+plot(tau2MCMC[1,loops/2:loops],type='l')
+plot(tau2MCMC[2,loops/2:loops],type='l')
+plot(tau2MCMC[3,loops/2:loops],type='l')
 
-plot(muMCMC[1,100:loops],type='l')
-plot(muMCMC[2,100:loops],type='l')
-plot(muMCMC[3,100:loops],type='l')
+plot(muMCMC[1,loops/2:loops],type='l')
+plot(muMCMC[2,loops/2:loops],type='l')
+plot(muMCMC[3,loops/2:loops],type='l')
 
 
