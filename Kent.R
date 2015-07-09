@@ -183,15 +183,17 @@ muMCMC = results[[4]]
 alphaMCMC = results[[5]]
 sigmalpha2MCMC = results[[6]]
 
-plot(sig2MCMC[10:(loops/1.25):loops],type='l',col=2)
-plot(sigmalpha2MCMC[(loops/1.25):loops],type='l',col=5)
+range=5000:loops
 
-plot(tau2MCMC[1,],type='l')
-plot(tau2MCMC[2,],type='l')
-plot(tau2MCMC[3,(loops/1.25):loops],type='l')
+plot(sig2MCMC[range],type='l',col=2)
+plot(sigmalpha2MCMC[range],type='l',col=5)
 
-plot(muMCMC[1,(loops/1.25):loops],type='l')
-plot(muMCMC[2,(loops/1.25):loops],type='l')
-plot(muMCMC[3,(loops/1.25):loops],type='l')
+plot(tau2MCMC[1,range],type='l')
+plot(tau2MCMC[2,range],type='l')
+plot(tau2MCMC[3,range],type='l')
+
+plot(muMCMC[1,range],type='l')
+plot(muMCMC[2,range],type='l')
+plot(muMCMC[3,range],type='l')
 
 

@@ -8,36 +8,6 @@ library(MCMCpack)
 
 # Gibb Sampling Functions -------------------------------------------------
 
-# Linear Model Functions
-
-sampleB = function(y,X,sig2,tau2)
-{
-  p = dim(X)[2]
-  SIG1inv = (1/sig2)*((t(X))%*%X) + (1/tau2)*diag(p)
-  SIG1 = solve(SIG1inv)
-  m = (1/sig2)*SIG1%*%t(X)%*%y
-  draw = mvrnorm(1,m,SIG1)
-  return(draw)
-}
-
-samplesig2 = function(y,X,B,a,b)
-{
-  n = length(y)
-  p1 = (n/2) + (a/2)
-  p2 = as.numeric(( (t(y - (X%*%B)))%*%(y - (X%*%B)) + b )/2)
-  draw = rgamma(1,p1,p2)
-  return(1/draw)
-}
-
-sampletau2 = function(B,c,d)
-{
-  p = length(B)
-  p1 = (p/2) + (c/2)
-  p2 = ( (t(B))%*%B + d )/2
-  draw = rgamma(1,p1,p2)
-  return(1/draw)
-}
-
 reportMCMC = function(obj)
 {
   draws = obj
@@ -63,9 +33,7 @@ reportMCMC = function(obj)
   }
 }
 
-# Mean Model Functions
-
-sampleBmean = function(y,X,sig2,tau2,mu)
+sampleB = function(y,X,sig2,tau2,mu)
 {
   Tmat = diag(tau2)
   Tmatinv = diag(1/tau2)
@@ -77,7 +45,7 @@ sampleBmean = function(y,X,sig2,tau2,mu)
   return(draw)
 }
 
-samplesig2mean = function(y,X,B)
+samplesig2 = function(y,X,B)
 {
   n = length(y)
   p1 = (n+4)/2
@@ -86,7 +54,7 @@ samplesig2mean = function(y,X,B)
   return(1/draw)
 }
 
-sampletau2mean = function(B)
+sampletau2 = function(B)
 {
   NS = length(B)
   p1 = (NS+3)/2
@@ -95,71 +63,12 @@ sampletau2mean = function(B)
   return(1/draw)
 }
 
-samplemumean = function(B,tau2,m,v2)
+samplemu = function(B,tau2,m,v2)
 {
   NS = length(B)
   thetabar = mean(B)
   sigmu2 = 1/(NS/tau2 + 1/v2)
   mmu = sigmu2*((NS/tau2)*thetabar + (1/v2)*m)
-  draw = rnorm(1,mmu,sqrt(sigmu2))
-  return(draw)
-}
-
-# Data augmentation functions
-sampleBaug = function(z,X,mu,sig20)
-{
-  numpred = dim(X)[2]
-  Tmat = diag(sig20,numpred)
-  Tmatinv = diag(1/sig20,numpred)
-  SIGBinv = (t(X))%*%X + Tmatinv
-  SIGB = ginv(as.matrix(SIGBinv))
-  m = SIGB%*%(t(X)%*%(z-mu))
-  
-#   m = ginv(t(X)%*%X)%*%t(X)%*%(z-mu)
-#   SIGB = ginv(t(X)%*%X)
-#   
-  draw = mvrnorm(1,m,SIGB)
-  return(draw)
-}
-
-applyfunc = function(vec,B)
-{
-  y = vec[1]
-  mu = vec[2]
-  X = vec[3:length(vec)]
-
-  if(y==1){ 
-    zsamp=rtruncnorm(1,0,Inf,mean= mu + t(X)%*%B,sd=1) 
-  }
-  if(y==0){ 
-    zsamp=rtruncnorm(1,-Inf,0,mean= mu + t(X)%*%B,sd=1)  
-  }
-  return(zsamp)
-}
-
-samplezaug = function(y,X,B,mu)
-{
-  N = length(y)
-  V = cbind(y,mu,X)
-  zsamp = apply(V,MARGIN = 1,applyfunc,B)
-  return(zsamp)
-}
-
-sampletau2aug = function(mu)
-{
-  NS = length(mu)
-  p1 = (NS+3)/2
-  p2 = ( (t(mu))%*%mu )/2
-  draw = rgamma(1,p1,p2)
-  return(1/draw)
-}
-
-samplemuaug = function(zmxB,tau2)
-{
-  NS = length(zmxB)
-  thetabar = mean(zmxB)
-  sigmu2 = 1/(NS + 1/tau2)
-  mmu = sigmu2*(NS*thetabar)
   draw = rnorm(1,mmu,sqrt(sigmu2))
   return(draw)
 }
@@ -279,17 +188,17 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
     }
     
     # SAMPLE betas
-    BMCMC[,i] = as.numeric(sampleBmean(y-alphas,X,sig2MCMC[i-1],rep(tau2MCMC[,i-1],numi*numj),rep(muMCMC[,i-1],numi*numj)))
+    BMCMC[,i] = as.numeric(sampleB(y-alphas,X,sig2MCMC[i-1],rep(tau2MCMC[,i-1],numi*numj),rep(muMCMC[,i-1],numi*numj)))
     
     # SAMPLE sig2
-    sig2MCMC[i] = samplesig2mean(y-alphas,X,BMCMC[,i])
+    sig2MCMC[i] = samplesig2(y-alphas,X,BMCMC[,i])
     
     # SAMPLE the prior parameters on the betas .. mu and tau2 (both vectors)
     for(j in 1:numpred)
     {
       predin = (loopind+j-1)
-      tau2MCMC[j,i] = sampletau2mean((BMCMC[predin,i]-muMCMC[j,i-1]))
-      muMCMC[j,i] = samplemumean(BMCMC[predin,i],tau2MCMC[j,i],m,sig02)    
+      tau2MCMC[j,i] = sampletau2((BMCMC[predin,i]-muMCMC[j,i-1]))
+      muMCMC[j,i] = samplemu(BMCMC[predin,i],tau2MCMC[j,i],m,sig02)    
     }
     
     # sample prior parameter sigalpha2
