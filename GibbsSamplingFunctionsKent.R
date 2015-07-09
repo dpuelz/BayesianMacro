@@ -142,7 +142,7 @@ Gibbswrapperaug = function(loops,y,X,stateID)
   return(list(BMCMC,zMCMC,tau2MCMC,muMCMC))
 }
 
-Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
+Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist,BPrior)
 {
   # prior on mui
   m = 0
@@ -193,12 +193,21 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
     # SAMPLE sig2
     sig2MCMC[i] = samplesig2(y-alphas,X,BMCMC[,i])
     
-    # SAMPLE the prior parameters on the betas .. mu and tau2 (both vectors)
-    for(j in 1:numpred)
+    if(BPrior==TRUE)
     {
-      predin = (loopind+j-1)
-      tau2MCMC[j,i] = sampletau2((BMCMC[predin,i]-muMCMC[j,i-1]))
-      muMCMC[j,i] = samplemu(BMCMC[predin,i],tau2MCMC[j,i],m,sig02)    
+      # SAMPLE the prior parameters on the betas .. mu and tau2 (both vectors)
+      for(j in 1:numpred)
+      {
+        predin = (loopind+j-1)
+        tau2MCMC[j,i] = sampletau2((BMCMC[predin,i]-muMCMC[j,i-1]))
+        muMCMC[j,i] = samplemu(BMCMC[predin,i],tau2MCMC[j,i],m,sig02)    
+      }  
+    }
+    
+    if(BPrior==FALSE)
+    {
+      tau2MCMC[,i] = 50
+      muMCMC[,i] = 0
     }
     
     # sample prior parameter sigalpha2

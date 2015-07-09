@@ -166,7 +166,7 @@ y = newmac2$dexp_share
 
 numi = length(ucounti)
 numj = length(ucountj)
-loops = 10000
+loops = 2000
 
 alphaIDlist = list()
 for(i in 1:length(ucounti))
@@ -175,7 +175,7 @@ for(i in 1:length(ucounti))
 }
 
 source('GibbsSamplingFunctionsKent.R')
-results = Gibbswrapper(loops,y,X,numi,numj,alphaIDlist)
+results = Gibbswrapper(loops,y,X,numi,numj,alphaIDlist,BPrior=FALSE)
 BMCMC = results[[1]]
 sig2MCMC = results[[2]]
 tau2MCMC = results[[3]]
@@ -183,7 +183,7 @@ muMCMC = results[[4]]
 alphaMCMC = results[[5]]
 sigmalpha2MCMC = results[[6]]
 
-range=5000:loops
+range=100:loops
 
 plot(sig2MCMC[range],type='l',col=2)
 plot(sigmalpha2MCMC[range],type='l',col=5)
@@ -196,4 +196,13 @@ plot(muMCMC[1,range],type='l')
 plot(muMCMC[2,range],type='l')
 plot(muMCMC[3,range],type='l')
 
+plot(BMCMC[1,range],type='l')
+plot(BMCMC[2,range],type='l')
+plot(BMCMC[3,range],type='l')
+plot(BMCMC[4,range],type='l')
+
+plot(BMCMC[10,range],type='l')
+plot(BMCMC[11,range],type='l')
+plot(BMCMC[12,range],type='l')
+plot(BMCMC[13,range],type='l')
 
