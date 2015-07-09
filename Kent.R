@@ -166,7 +166,7 @@ y = newmac2$dexp_share
 
 numi = length(ucounti)
 numj = length(ucountj)
-loops = 1000
+loops = 10000
 
 alphaIDlist = list()
 for(i in 1:length(ucounti))
@@ -186,8 +186,8 @@ sigmalpha2MCMC = results[[6]]
 plot(sig2MCMC[10:(loops/1.25):loops],type='l',col=2)
 plot(sigmalpha2MCMC[(loops/1.25):loops],type='l',col=5)
 
-plot(tau2MCMC[1,(loops/1.25):loops],type='l')
-plot(tau2MCMC[2,(loops/1.25):loops],type='l')
+plot(tau2MCMC[1,],type='l')
+plot(tau2MCMC[2,],type='l')
 plot(tau2MCMC[3,(loops/1.25):loops],type='l')
 
 plot(muMCMC[1,(loops/1.25):loops],type='l')

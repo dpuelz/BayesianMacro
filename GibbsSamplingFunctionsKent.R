@@ -257,7 +257,7 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
   # starting points for MCMC
   BMCMC[,1] = rep(1,size)
   sig2MCMC[1] = 1
-  sigmalpha2MCMC[1] = 5
+  sigmalpha2MCMC[1] = 50
   tau2MCMC[,1] = rep(1,numpred)
   muMCMC[,1] = rep(1,numpred)
   alphaMCMC[,1] = rep(1,numi)
@@ -294,7 +294,7 @@ Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist)
     
     # sample prior parameter sigalpha2
     # sigmalpha2MCMC[i] = samplesigmalpha2(alphaMCMC[,i-1])
-    sigmalpha2MCMC[i] = 5
+    sigmalpha2MCMC[i] = 50
     
     # SAMPLE the country i level fixed effects (alphas)
     for(j in 1:numi)
