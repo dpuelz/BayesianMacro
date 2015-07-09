@@ -91,56 +91,7 @@ samplesigmalpha2 = function(mu)
   return(1/draw)
 }
 
-# The wrapper functions ---------------------------------------------------
-
-Gibbswrapperaug = function(loops,y,X,stateID)
-{
-  # prior on beta vector
-  sig20 = 50
-  
-  #other stuff
-  numstates = 49
-  N = length(y)
-  numpred = dim(X)[2]
-  BMCMC = matrix(0,numpred,loops)
-  zMCMC = matrix(0,N,loops)
-  tau2MCMC = rep(0,loops)
-  muMCMC = matrix(0,numstates,loops)
-  names(tau2MCMC) = rep(paste('tau2'),loops)
-  rownames(muMCMC) = paste('mu',1:numstates)
-  
-  BMCMC[,1] = rep(1,numpred)
-  zMCMC[,1] = rep(1,N)
-  tau2MCMC[1] = 1
-  muMCMC[,1] =rep(1,numstates) 
-  
-  for(i in 2:loops)
-  {
-    if(i%%5==0){print(noquote(paste('MCMC iter =',i)))}
-    
-    # build current mu
-    
-    mucurrent = rep(0,N)
-    for(j in 1:numstates)
-    {
-      ind = stateID[[j]]
-      mucurrent[ind] = rep( muMCMC[j,(i-1)],length(ind) )  
-    }
-    
-    #construct tau2 and mu draws
-    BMCMC[,i] = as.numeric(sampleBaug(zMCMC[,(i-1)],X,mucurrent,sig20))
-    zMCMC[,i] = as.numeric(samplezaug(y,X,BMCMC[,i],mucurrent))
-    tau2MCMC[i] = sampletau2aug(mucurrent)
-    for(j in 1:numstates)
-    {
-      ind = stateID[[j]]
-      zxmB = zMCMC[ind,i] - X[ind,]%*%BMCMC[,i]
-      muMCMC[j,i] = samplemuaug(zxmB,tau2MCMC[i])
-    }
-    
-  }
-  return(list(BMCMC,zMCMC,tau2MCMC,muMCMC))
-}
+# The wrapper function ---------------------------------------------------
 
 Gibbswrapper = function(loops,y,X,numi,numj,alphaIDlist,BPrior)
 {
