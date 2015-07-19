@@ -166,7 +166,7 @@ y = newmac2$dexp_share
 
 numi = length(ucounti)
 numj = length(ucountj)
-loops = 1000
+loops = 5000
 
 alphaIDlist = list()
 for(i in 1:length(ucounti))
