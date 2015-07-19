@@ -118,7 +118,7 @@ for(i in 1:length(ucounti))
     newmac$dcomp[ind] = log(comp) - log(L(comp,4))
     
     # gdp change for all i and j
-    gdp = newmac$comp[ind]
+    gdp = newmac$gdp_j[ind]
     newmac$dgdp[ind] = log( ((gdp)/(L(gdp,4)) - 1) + 1 )
   }
 }
