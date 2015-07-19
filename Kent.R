@@ -107,19 +107,19 @@ for(i in 1:length(ucounti))
     
     # export share change for all i and j
     exp_share = newmac$exp_share[ind]
-    newmac$dexp_share[ind] = log(exp_share) - log(L(exp_share,1))
+    newmac$dexp_share[ind] = log(exp_share) - log(L(exp_share,4))
     
     # fx change for all i and j
     fx = newmac$fx[ind]
-    newmac$dfx[ind] = log( (1 - ((fx)/(L(fx,1)))) + 1 )
+    newmac$dfx[ind] = log( (1 - ((fx)/(L(fx,4)))) + 1 )
     
     # comp change for all i and j
     comp = newmac$comp[ind]
-    newmac$dcomp[ind] = log(comp) - log(L(comp,1))
+    newmac$dcomp[ind] = log(comp) - log(L(comp,4))
     
     # gdp change for all i and j
     gdp = newmac$comp[ind]
-    newmac$dgdp[ind] = log( ((gdp)/(L(gdp,1)) - 1) + 1 )
+    newmac$dgdp[ind] = log( ((gdp)/(L(gdp,4)) - 1) + 1 )
   }
 }
 
@@ -166,7 +166,7 @@ y = newmac2$dexp_share
 
 numi = length(ucounti)
 numj = length(ucountj)
-loops = 2000
+loops = 1000
 
 alphaIDlist = list()
 for(i in 1:length(ucounti))
@@ -175,7 +175,7 @@ for(i in 1:length(ucounti))
 }
 
 source('GibbsSamplingFunctionsKent.R')
-results = Gibbswrapper(loops,y,X,numi,numj,alphaIDlist,BPrior=FALSE)
+results = Gibbswrapper(loops,y,X,numi,numj,alphaIDlist,BPrior=TRUE)
 BMCMC = results[[1]]
 sig2MCMC = results[[2]]
 tau2MCMC = results[[3]]
