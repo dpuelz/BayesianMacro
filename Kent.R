@@ -166,7 +166,7 @@ y = newmac2$dexp_share
 
 numi = length(ucounti)
 numj = length(ucountj)
-loops = 5000
+loops = 2000
 
 alphaIDlist = list()
 for(i in 1:length(ucounti))
@@ -183,7 +183,33 @@ muMCMC = results[[4]]
 alphaMCMC = results[[5]]
 sigmalpha2MCMC = results[[6]]
 
-range=100:loops
+
+# Summarizing results -----------------------------------------------------
+
+range=3000:loops
+
+# naming betas
+rownames(BMCMC) = rep("NA",dim(BMCMC)[1])
+count=1
+for(i in 1:length(ucounti))
+{
+  for(j in 1:length(ucountj))
+  {
+    ii = loopind[count]
+    rownames(BMCMC)[ii] = paste(paste(ucounti[i],"/",ucountj[j],sep=''),paste('B',1,sep=''),sep=' ')
+    rownames(BMCMC)[ii+1] = paste(paste(ucounti[i],"/",ucountj[j],sep=''),paste('B',2,sep=''),sep=' ')
+    rownames(BMCMC)[ii+2] = paste(paste(ucounti[i],"/",ucountj[j],sep=''),paste('B',3,sep=''),sep=' ')
+    count=count+1
+  }
+}
+
+# naming alphas
+
+
+pdf('prelimresults-BETAS.pdf',paper = "a4", width = 0, height = 0)
+par(mfrow = c(6,3))
+reportMCMC(t(BMCMC[,1000:2000]))
+dev.off()
 
 plot(sig2MCMC[range],type='l',col=2)
 plot(sigmalpha2MCMC[range],type='l',col=5)
