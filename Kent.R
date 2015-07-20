@@ -176,15 +176,15 @@ for(i in 1:length(ucounti))
 
 source('GibbsSamplingFunctionsKent.R')
 results = Gibbswrapper(loops,y,X,numi,numj,alphaIDlist,BPrior=TRUE)
+
+# Summarizing results -----------------------------------------------------
+
 BMCMC = results[[1]]
 sig2MCMC = results[[2]]
 tau2MCMC = results[[3]]
 muMCMC = results[[4]]
 alphaMCMC = results[[5]]
 sigmalpha2MCMC = results[[6]]
-
-
-# Summarizing results -----------------------------------------------------
 
 range=3000:loops
 
@@ -204,12 +204,22 @@ for(i in 1:length(ucounti))
 }
 
 # naming alphas
-
+rownames(alphaMCMC) = rep("NA",dim(alphaMCMC)[1])
+for(i in 1:length(ucounti))
+{
+  rownames(alphaMCMC)[i] = paste(ucounti[i],'alpha',sep=' ')
+}
 
 pdf('prelimresults-BETAS.pdf',paper = "a4", width = 0, height = 0)
 par(mfrow = c(6,3))
 reportMCMC(t(BMCMC[,1000:2000]))
 dev.off()
+
+pdf('prelimresults-alphas.pdf',paper = "a4", width = 0, height = 0)
+par(mfrow = c(3,3))
+reportMCMC(t(alphaMCMC[,1000:2000]))
+dev.off()
+
 
 plot(sig2MCMC[range],type='l',col=2)
 plot(sigmalpha2MCMC[range],type='l',col=5)
