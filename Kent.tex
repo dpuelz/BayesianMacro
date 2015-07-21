@@ -118,7 +118,19 @@
 
  
 \begin{align}
-	y_{ijt} = \alpha_{i} + \sum_{c=1}^{N}\beta_{ij}^{c}x_{ijt}^{c} + \epsilon_{ijt}
+	y_{ijt} &= \alpha_{i} + \sum_{c=1}^{C}\beta_{ij}^{c}x_{ijt}^{c} + \epsilon_{ijt}
+	\\ \nonumber
+	\\
+	\epsilon_{ijt} &\sim N(0,\sigma^{2})
+\end{align}
+
+where $y_{ijt}$ is the response (change in export share) and $\{ x_{ijt}^{c} \}_{c=1}^{C}$ is the set of $C$ covariates.  We need to estimate the following parameters: $\alpha_{i},\beta_{ij}^{c}$.
+\\
+\\
+To form a hierarchical model, we put priors and hyperpriors on the parameters we need to estimate.
+
+\begin{align}
+	
 \end{align}
 
 
