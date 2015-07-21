@@ -165,7 +165,21 @@ $y \in \mathbb{R}^{T*I*J}$, $\alpha \in \mathbb{R}^{T*I*J}$ and satisfying $\alp
 $\beta \in \mathbb{R}^{I*J*C}$. 
 \\
 \\
+The complete conditionals are:
 
+\begin{align}
+	\beta \vert \cdot &\sim N(m_{1},\Sigma_{1})
+	\\
+	& \Sigma_{1}^{-1} = \frac{1}{\sigma^{2}}X^{T}X + T^{-1} \nonumber
+	\\
+	& m_{1} = \Sigma_{1} \left( \frac{1}{\sigma^{2}}  X^{T}( y-\alpha ) + T^{-1} \mu \right) \nonumber
+	\\ \nonumber
+	\\
+	\sigma^{2} \vert \cdot &\sim Ga\left(\frac{T*I*J}{2} + 2 , \hspace{2mm} \frac{(y-\alpha- X\beta)^{T}(y-\alpha- X\beta)}{2}\right)
+	\\ \nonumber
+	\\
+	\tau_{c}^{2} \vert \cdot &\sim Ga\left( \frac{I*J +1}{2} + 1, \hspace{2mm}  \right)
+\end{align}
 
 
 
