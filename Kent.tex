@@ -127,11 +127,52 @@
 where $y_{ijt}$ is the response (change in export share) and $\{ x_{ijt}^{c} \}_{c=1}^{C}$ is the set of $C$ covariates.  We need to estimate the following parameters: $\alpha_{i},\beta_{ij}^{c}$.
 \\
 \\
-To form a hierarchical model, we put priors and hyperpriors on the parameters we need to estimate.
+To form a hierarchical model, we put \textcolor{blue}{priors} and \textcolor{red}{hyperpriors} on the parameters we need to estimate.
 
 \begin{align}
-	
+	\color{blue} \beta_{ij}^{c} & \color{blue} \sim N(\mu_{c},\tau_{c}^{2}) \hspace{3mm} \forall c
+	\\ \nonumber
+	\\
+	\color{blue} \alpha_{i} & \color{blue} \sim N(0,\sigma_{\alpha}^{2}) \hspace{3mm} \forall i
+	\\ \nonumber
+	\\
+	\color{blue} \sigma^{2} & \color{blue} \propto \frac{1}{\sigma^{2}}
+	\\ \nonumber
+	\\
+	\color{red} \mu_{c} & \color{red} \sim N(0,\sigma_{0}^{2}) \hspace{3mm} \forall c
+	\\ \nonumber
+	\\
+	\color{red} \tau_{c}^{2} & \color{red} \propto \frac{1}{\tau_{c}} \hspace{3mm} \forall c
+	\\ \nonumber
+	\\
+	\color{red} \sigma_{0}^{2} & \color{red} =  50
 \end{align}
+
+\section{Posteriors}
+
+These priors and hyperpriors imply the following posterior distributions of the parameters.  Let's suppose we have $T*I*J$ total observations in our panel.  Here, $T$ is the number of time points, $I$ is the number of country $i$'s and, $J$ is the number of country $j$'s.  We re-write the model is matrix notation as:
+
+\begin{align}
+	y = \alpha + X\beta + \epsilon
+\end{align}
+
+$y \in \mathbb{R}^{T*I*J}$, $\alpha \in \mathbb{R}^{T*I*J}$ and satisfying $\alpha_{n} = \alpha_{i}$ if $y_{n} = y_{i \cdot \cdot} \hspace{2mm} \forall n \in \{1, \cdots, T*I*J\}$.
+\\
+\\
+ $X \in \mathbb{R}^{(T*I*J) x (I*J*C)}$ is a sparse matrix.
+\\
+\\ 
+$\beta \in \mathbb{R}^{I*J*C}$. 
+\\
+\\
+
+
+
+
+
+
+
+
 
 
 \end{document}

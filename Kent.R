@@ -99,12 +99,13 @@ newmac$dfx = rep(0,N)
 newmac$dcomp = rep(0,N)
 newmac$dgdp = rep(0,N)
 
+c=1
 for(i in 1:length(ucounti))
 {
   for(j in 1:length(ucountj))
   {
     ind = intersect(which(newmac$country_j==ucountj[j]),which(newmac$country_i==ucounti[i]))
-    
+    if(length(ind)!=136) { print(c); print(length(ind)); print(ind)}
     # export share change for all i and j
     exp_share = newmac$exp_share[ind]
     newmac$dexp_share[ind] = log(exp_share) - log(L(exp_share,4))
@@ -120,6 +121,7 @@ for(i in 1:length(ucounti))
     # gdp change for all i and j
     gdp = newmac$gdp_j[ind]
     newmac$dgdp[ind] = log( ((gdp)/(L(gdp,4)) - 1) + 1 )
+    c=c+1
   }
 }
 
